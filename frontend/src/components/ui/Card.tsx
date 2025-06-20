@@ -4,11 +4,13 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { cn } from '../../utils/cn'
 
-interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+interface CardProps {
   children: React.ReactNode
   variant?: 'default' | 'gradient' | 'glass' | 'elevated'
   hover?: boolean
   animate?: boolean
+  className?: string
+  onClick?: () => void
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -17,7 +19,7 @@ export const Card: React.FC<CardProps> = ({
   hover = true,
   animate = true,
   className,
-  ...props
+  onClick
 }) => {
   const baseClasses = 'rounded-xl transition-all duration-300'
   
@@ -30,27 +32,31 @@ export const Card: React.FC<CardProps> = ({
   
   const hoverEffects = hover ? 'hover:shadow-xl hover:-translate-y-1 hover:scale-[1.02]' : ''
   
-  const MotionDiv = animate ? motion.div : 'div'
-  
-  const motionProps = animate ? {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.3 }
-  } : {}
+  const cardClasses = cn(
+    baseClasses,
+    variants[variant],
+    hoverEffects,
+    className
+  )
+
+  if (animate) {
+    return (
+      <motion.div
+        className={cardClasses}
+        onClick={onClick}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        {children}
+      </motion.div>
+    )
+  }
 
   return (
-    <MotionDiv
-      className={cn(
-        baseClasses,
-        variants[variant],
-        hoverEffects,
-        className
-      )}
-      {...(animate ? motionProps : {})}
-      {...props}
-    >
+    <div className={cardClasses} onClick={onClick}>
       {children}
-    </MotionDiv>
+    </div>
   )
 }
 

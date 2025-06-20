@@ -45,7 +45,7 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
     }
   })
 
-  const { isConnected, users, chatMessages, sendChatMessage, socket } = useSocket(roomId, userData)
+  const { isConnected, users, chatMessages, sendChatMessage, socket, socketId } = useSocket(roomId, userData)
 
   const handleToolChange = useCallback((tool: Tool) => {
     setCurrentTool(tool)
@@ -312,7 +312,7 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
               <CardContent className="p-0 flex-1 min-h-0">                <Chat
                   messages={chatMessages}
                   users={users}
-                  currentUserId={socket?.id}
+                  currentUserId={socketId || undefined}
                   onSendMessage={sendChatMessage}
                   onClose={() => setShowChat(false)}
                 />

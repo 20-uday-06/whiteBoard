@@ -2,7 +2,7 @@ import { io, Socket } from 'socket.io-client'
 
 class SocketService {
   private socket: Socket | null = null
-  private listeners: Map<string, Function[]> = new Map()
+  private listeners: Map<string, ((...args: any[]) => void)[]> = new Map()
 
   connect(url: string) {
     if (this.socket?.connected) {
@@ -31,8 +31,7 @@ class SocketService {
   emit(event: string, data?: any) {
     this.socket?.emit(event, data)
   }
-
-  on(event: string, callback: Function) {
+  on(event: string, callback: (...args: any[]) => void) {
     if (!this.listeners.has(event)) {
       this.listeners.set(event, [])
     }
@@ -43,7 +42,7 @@ class SocketService {
     }
   }
 
-  off(event: string, callback?: Function) {
+  off(event: string, callback?: (...args: any[]) => void) {
     if (callback) {
       const callbacks = this.listeners.get(event) || []
       const index = callbacks.indexOf(callback)
