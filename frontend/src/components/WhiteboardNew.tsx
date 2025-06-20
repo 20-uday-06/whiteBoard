@@ -23,145 +23,46 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
   const [lineWidth, setLineWidth] = useState(2)
   const [showChat, setShowChat] = useState(false)
   const [showUsers, setShowUsers] = useState(false)
-  const [drawingHistory, setDrawingHistory] = useState<string[]>([])
-  const [historyIndex, setHistoryIndex] = useState(-1)
   
-  // Get username from URL parameters or generate random name
-  const [userData] = useState(() => {
-    let username = `User${Math.floor(Math.random() * 1000)}`
-    
-    // Check if running in browser and extract username from URL params
-    if (typeof window !== 'undefined') {
-      const urlParams = new URLSearchParams(window.location.search)
-      const paramUsername = urlParams.get('username')
-      if (paramUsername) {
-        username = paramUsername
-      }
-    }
-    
-    return {
-      name: username,
-      color: `hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`
-    }
-  })
+  // Generate random user data
+  const [userData] = useState(() => ({
+    name: `User${Math.floor(Math.random() * 1000)}`,
+    color: `hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`
+  }))
 
   const { isConnected, users, chatMessages, sendChatMessage, socket } = useSocket(roomId, userData)
 
   const handleToolChange = useCallback((tool: Tool) => {
     setCurrentTool(tool)
   }, [])
-  
+
   const handleColorChange = useCallback((color: string) => {
     setCurrentColor(color)
   }, [])
-  
+
   const handleLineWidthChange = useCallback((width: number) => {
-    console.log('Line width changing to:', width) // Debug log
-    setLineWidth(width)  }, [])
-  
-  const saveCanvasState = useCallback(() => {
-    if (canvasRef.current) {
-      const canvas = canvasRef.current
-      const dataURL = canvas.toDataURL()
-      setDrawingHistory(prev => {
-        const newHistory = prev.slice(0, historyIndex + 1)
-        newHistory.push(dataURL)
-        return newHistory.slice(-20) // Keep only last 20 states
-      })
-      setHistoryIndex(prev => Math.min(prev + 1, 19))
-    }
-  }, [historyIndex])
+    setLineWidth(width)
+  }, [])
 
   const handleUndo = useCallback(() => {
-    // First try server-side undo
     socket.emit('undo')
-    
-    // Fallback to client-side undo if server doesn't respond
-    setTimeout(() => {
-      if (historyIndex > 0 && canvasRef.current && drawingHistory.length > 0) {
-        const canvas = canvasRef.current
-        const context = canvas.getContext('2d')
-        if (context) {
-          const prevIndex = historyIndex - 1
-          const img = new Image()
-          img.onload = () => {
-            context.clearRect(0, 0, canvas.width, canvas.height)
-            context.drawImage(img, 0, 0)
-          }
-          img.src = drawingHistory[prevIndex]
-          setHistoryIndex(prevIndex)
-        }
-      }
-    }, 100)
-  }, [socket, historyIndex, drawingHistory])
+  }, [socket])
 
   const handleRedo = useCallback(() => {
-    if (historyIndex < drawingHistory.length - 1 && canvasRef.current) {
-      const canvas = canvasRef.current
-      const context = canvas.getContext('2d')
-      if (context) {
-        const nextIndex = historyIndex + 1
-        const img = new Image()
-        img.onload = () => {
-          context.clearRect(0, 0, canvas.width, canvas.height)
-          context.drawImage(img, 0, 0)
-        }
-        img.src = drawingHistory[nextIndex]
-        setHistoryIndex(nextIndex)
-      }
-    }
-  }, [historyIndex, drawingHistory])
-
-  // Save canvas state after drawing operations
-  React.useEffect(() => {
-    const handleDrawEnd = () => {
-      // Small delay to ensure drawing is complete
-      setTimeout(saveCanvasState, 100)
-    }
-
-    const canvas = canvasRef.current
-    if (canvas) {
-      canvas.addEventListener('mouseup', handleDrawEnd)
-      canvas.addEventListener('touchend', handleDrawEnd)
-      
-      return () => {
-        canvas.removeEventListener('mouseup', handleDrawEnd)
-        canvas.removeEventListener('touchend', handleDrawEnd)
-      }
-    }
-  }, [saveCanvasState])
+    socket.emit('redo')
+  }, [socket])
 
   const handleClearCanvas = useCallback(() => {
     socket.emit('clear-canvas')
   }, [socket])
+
   const handleExportCanvas = useCallback(() => {
     if (canvasRef.current) {
       const canvas = canvasRef.current
-      const context = canvas.getContext('2d')
-      
-      if (context) {
-        // Create a new canvas with white background
-        const exportCanvas = document.createElement('canvas')
-        const exportContext = exportCanvas.getContext('2d')
-        
-        if (exportContext) {
-          exportCanvas.width = canvas.width
-          exportCanvas.height = canvas.height
-          
-          // Fill with white background
-          exportContext.fillStyle = '#FFFFFF'
-          exportContext.fillRect(0, 0, exportCanvas.width, exportCanvas.height)
-          
-          // Draw the original canvas on top
-          exportContext.drawImage(canvas, 0, 0)
-          
-          // Create download link
-          const link = document.createElement('a')
-          link.download = `whiteboard-${roomId}-${Date.now()}.png`
-          link.href = exportCanvas.toDataURL('image/png')
-          link.click()
-        }
-      }
+      const link = document.createElement('a')
+      link.download = `whiteboard-${roomId}-${Date.now()}.png`
+      link.href = canvas.toDataURL()
+      link.click()
     }
   }, [roomId])
 
@@ -207,12 +108,14 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
         onRedo={handleRedo}
         onClear={handleClearCanvas}
         onExport={handleExportCanvas}
-      />      {/* Top Status Bar */}
+      />
+
+      {/* Top Status Bar */}
       <motion.div
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.2 }}
-        className="absolute top-4 right-4 z-30 flex items-center gap-3"
+        className="absolute top-4 right-4 z-40 flex items-center gap-3"
       >
         {/* Connection Status */}
         <motion.div
@@ -298,9 +201,11 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: 400, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="absolute top-0 right-0 h-full w-96 z-40"
-          >            <Card variant="glass" className="h-full m-4 overflow-hidden flex flex-col">              <CardHeader className="flex flex-row items-center justify-between border-b border-white/20 flex-shrink-0 p-4">
-                <CardTitle className="text-lg mb-0">Chat</CardTitle>
+            className="absolute top-0 right-0 h-full w-96 z-50"
+          >
+            <Card variant="glass" className="h-full m-4 overflow-hidden">
+              <CardHeader className="flex-row items-center justify-between border-b border-white/20">
+                <CardTitle className="text-lg">Chat</CardTitle>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -309,10 +214,10 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
                   <X size={16} />
                 </Button>
               </CardHeader>
-              <CardContent className="p-0 flex-1 min-h-0">                <Chat
+              <CardContent className="p-0 h-full">
+                <Chat
                   messages={chatMessages}
                   users={users}
-                  currentUserId={socket?.id}
                   onSendMessage={sendChatMessage}
                   onClose={() => setShowChat(false)}
                 />
@@ -330,7 +235,7 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
             animate={{ x: 0, opacity: 1 }}
             exit={{ x: -300, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="absolute top-0 left-0 h-full w-80 z-40"
+            className="absolute top-0 left-0 h-full w-80 z-50"
           >
             <Card variant="glass" className="h-full m-4 overflow-hidden">
               <CardHeader className="flex-row items-center justify-between border-b border-white/20">

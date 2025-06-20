@@ -18,6 +18,9 @@
   "devDependencies": {
     "nodemon": "^3.0.1"
   },
+  "engines": {
+    "node": "18.x"
+  },
   "keywords": ["whiteboard", "collaboration", "real-time", "websocket"],
   "author": "Your Name",
   "license": "MIT"

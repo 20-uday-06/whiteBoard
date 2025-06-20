@@ -2,6 +2,46 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Hide scrollbar utility classes */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;             /* Chrome, Safari and Opera */
+}
+
+/* Force high z-index for toolbar dropdowns */
+.toolbar-dropdown {
+  z-index: 999999 !important;
+  position: fixed !important;
+}
+
+.toolbar-main {
+  z-index: 99999 !important;
+  position: fixed !important;
+  /* Smooth horizontal scrolling */
+  scroll-behavior: smooth;
+}
+
+.toolbar-main::-webkit-scrollbar {
+  height: 4px;
+}
+
+.toolbar-main::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.toolbar-main::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+}
+
+.toolbar-main::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -169,4 +209,22 @@ body {
 
 .send-button:hover {
   background: #2563eb;
+}
+
+/* Additional backdrop blur and shadow for modern look */
+.toolbar-backdrop {
+  backdrop-filter: blur(12px) saturate(180%);
+  background-color: rgba(255, 255, 255, 0.85);
+  box-shadow: 
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+}
+
+/* Dropdown animations and positioning */
+.toolbar-dropdown {
+  backdrop-filter: blur(8px) saturate(180%);
+  box-shadow: 
+    0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
 }

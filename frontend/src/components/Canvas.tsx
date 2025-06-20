@@ -14,10 +14,11 @@ interface CanvasProps {
 const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
   ({ socket, currentTool, currentColor, lineWidth, users }, ref) => {
     const canvasRef = useRef<HTMLCanvasElement>(null)
-    const contextRef = useRef<CanvasRenderingContext2D | null>(null)
-    const [isDrawing, setIsDrawing] = useState(false)
-    const [startPos, setStartPos] = useState({ x: 0, y: 0 })
-    const [currentPath, setCurrentPath] = useState<{ x: number; y: number }[]>([])
+  const contextRef = useRef<CanvasRenderingContext2D | null>(null)
+  const [isDrawing, setIsDrawing] = useState(false)
+  const [startPos, setStartPos] = useState({ x: 0, y: 0 })
+  const [currentPath, setCurrentPath] = useState<{ x: number; y: number }[]>([])
+  const [userStrokes, setUserStrokes] = useState<Map<string, { username: string; positions: { x: number; y: number }[] }>>(new Map())
 
     useImperativeHandle(ref, () => canvasRef.current!, [])
 
@@ -39,13 +40,24 @@ const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
       context.lineJoin = 'round'
       context.imageSmoothingEnabled = true
 
-      contextRef.current = context
-
-      // Socket event listeners for collaborative drawing
+      contextRef.current = context      // Socket event listeners for collaborative drawing
       const handleDrawStart = (data: DrawingData & { userId: string }) => {
         if (data.userId !== socket.id) {
           contextRef.current?.beginPath()
           contextRef.current?.moveTo(data.x, data.y)
+          
+          // Store user drawing start position
+          const user = users.find(u => u.id === data.userId)
+          if (user) {
+            setUserStrokes(prev => {
+              const newMap = new Map(prev)
+              newMap.set(data.userId, {
+                username: user.name,
+                positions: [{ x: data.x, y: data.y }]
+              })
+              return newMap
+            })
+          }
         }
       }
 
@@ -62,13 +74,69 @@ const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
             contextRef.current.lineTo(data.x, data.y)
             contextRef.current.stroke()
           }
+
+          // Update user stroke positions
+          setUserStrokes(prev => {
+            const newMap = new Map(prev)
+            const existing = newMap.get(data.userId)
+            if (existing) {
+              existing.positions.push({ x: data.x, y: data.y })
+            }
+            return newMap
+          })
         }
       }
 
-      const handleDrawEnd = () => {
+      const handleDrawEnd = (data: any) => {
         if (contextRef.current) {
           contextRef.current.globalCompositeOperation = 'source-over'
         }
+        
+        // Clear user stroke tracking after a delay to show username
+        setTimeout(() => {
+          setUserStrokes(prev => {
+            const newMap = new Map(prev)
+            if (data && data.userId && data.userId !== socket.id) {
+              newMap.delete(data.userId)
+            }
+            return newMap
+          })
+        }, 2000) // Show username for 2 seconds after drawing
+      }
+
+      const handleCanvasState = (data: { canvasData: any[], users: any[] }) => {
+        // Restore canvas from server state
+        if (data.canvasData && contextRef.current) {
+          const context = contextRef.current
+          const canvas = canvasRef.current
+          if (canvas) {
+            // Clear canvas first
+            context.clearRect(0, 0, canvas.width, canvas.height)
+            
+            // Redraw all elements
+            data.canvasData.forEach(element => {
+              if (element.tool === 'pen' || element.tool === 'eraser') {
+                if (element.path && element.path.length > 1) {
+                  context.globalCompositeOperation = 
+                    element.tool === 'eraser' ? 'destination-out' : 'source-over'
+                  context.strokeStyle = element.color
+                  context.lineWidth = element.lineWidth
+                  context.beginPath()
+                  context.moveTo(element.path[0].x, element.path[0].y)
+                  
+                  for (let i = 1; i < element.path.length; i++) {
+                    context.lineTo(element.path[i].x, element.path[i].y)
+                  }
+                  context.stroke()
+                  context.globalCompositeOperation = 'source-over'
+                }
+              } else if (element.type === 'rectangle' || element.type === 'circle') {
+                drawShape(element)
+              } else if (element.text) {
+                drawText(element)
+              }
+            })
+          }        }
       }
 
       const handleShapeCreated = (data: ShapeData & { userId: string }) => {
@@ -85,6 +153,7 @@ const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
 
       const handleCanvasCleared = () => {
         clearCanvas()
+        setUserStrokes(new Map())
       }
 
       socket.on('draw-start', handleDrawStart)
@@ -93,6 +162,7 @@ const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
       socket.on('shape-created', handleShapeCreated)
       socket.on('text-created', handleTextCreated)
       socket.on('canvas-cleared', handleCanvasCleared)
+      socket.on('canvas-state', handleCanvasState)
 
       return () => {
         socket.off('draw-start', handleDrawStart)
@@ -101,8 +171,21 @@ const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
         socket.off('shape-created', handleShapeCreated)
         socket.off('text-created', handleTextCreated)
         socket.off('canvas-cleared', handleCanvasCleared)
+        socket.off('canvas-state', handleCanvasState)
       }
-    }, [socket])
+    }, [socket])    // Update canvas context properties when color or line width changes
+    useEffect(() => {
+      const context = contextRef.current
+      if (context) {
+        context.strokeStyle = currentColor
+        context.lineWidth = lineWidth
+        context.fillStyle = currentColor
+        
+        // Force context update by creating a new path
+        context.beginPath()
+        context.closePath()
+      }
+    }, [currentColor, lineWidth])
 
     const getMousePos = (e: React.MouseEvent) => {
       const canvas = canvasRef.current
@@ -130,9 +213,7 @@ const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
         const centerY = shapeData.y + shapeData.height / 2
         const radius = Math.min(Math.abs(shapeData.width), Math.abs(shapeData.height)) / 2
         context.arc(centerX, centerY, radius, 0, 2 * Math.PI)
-      }
-
-      context.stroke()
+      }      context.stroke()
     }
 
     const drawText = (textData: TextData) => {
@@ -163,8 +244,14 @@ const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
         if (context) {
           context.globalCompositeOperation = 
             currentTool === 'eraser' ? 'destination-out' : 'source-over'
-          context.strokeStyle = currentColor
+          
+          // Ensure color and line width are properly set
+          if (currentTool === 'pen') {
+            context.strokeStyle = currentColor
+            context.fillStyle = currentColor
+          }
           context.lineWidth = lineWidth
+          
           context.beginPath()
           context.moveTo(pos.x, pos.y)
         }
@@ -271,8 +358,7 @@ const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
           onMouseUp={handleMouseUp}
           onMouseLeave={() => setIsDrawing(false)}
         />
-        
-        {/* User cursors */}
+          {/* User cursors */}
         {users.map((user) => (
           user.cursor && user.id !== socket.id && (
             <div
@@ -294,6 +380,29 @@ const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
             </div>
           )
         ))}
+
+        {/* User stroke names */}
+        {Array.from(userStrokes.entries()).map(([userId, strokeData]) => {
+          if (strokeData.positions.length === 0) return null
+          
+          // Show username at the latest position
+          const latestPos = strokeData.positions[strokeData.positions.length - 1]
+          return (
+            <div
+              key={`stroke-${userId}`}
+              className="absolute pointer-events-none z-20"
+              style={{
+                left: latestPos.x,
+                top: latestPos.y - 30,
+                transform: 'translate(-50%, 0)'
+              }}
+            >
+              <div className="bg-blue-600 text-white text-xs px-2 py-1 rounded-full shadow-lg whitespace-nowrap">
+                {strokeData.username}
+              </div>
+            </div>
+          )
+        })}
       </div>
     )
   }

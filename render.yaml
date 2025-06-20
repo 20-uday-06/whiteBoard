@@ -1,0 +1,14 @@
+# Render Deployment Configuration
+# This file tells Render how to deploy your backend
+
+# Build Command (if needed)
+# npm install
+
+# Start Command
+# npm start
+
+# Environment Variables to set in Render:
+# PORT=5000
+# FRONTEND_URL=https://whiteboard-collaboration.vercel.app
+# MONGODB_URI=mongodb+srv://username:password@whiteboard-cluster.xxxxx.mongodb.net/collaborative-whiteboard?retryWrites=true&w=majority
+# NODE_ENV=production

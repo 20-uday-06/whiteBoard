@@ -2,8 +2,19 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
+const mongoose = require('mongoose');
 const { v4: uuidv4 } = require('uuid');
 require('dotenv').config();
+
+// Connect to MongoDB
+if (process.env.MONGODB_URI) {
+  mongoose.connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('MongoDB connection error:', err));
+}
 
 const app = express();
 const server = http.createServer(app);
@@ -44,13 +55,19 @@ class Room {
   removeUser(userId) {
     this.users.delete(userId);
   }
-
   addCanvasElement(element) {
     this.canvasData.push({
       ...element,
       id: uuidv4(),
       timestamp: new Date()
     });
+  }
+
+  getCanvasData() {
+    return this.canvasData.map(element => ({
+      ...element,
+      username: this.users.get(element.userId)?.name || 'Unknown User'
+    }));
   }
 
   clearCanvas() {
@@ -104,13 +121,12 @@ app.get('/api/rooms/:roomId', (req, res) => {
   if (!room) {
     return res.status(404).json({ error: 'Room not found' });
   }
-  
-  res.json({
+    res.json({
     id: room.id,
     name: room.name,
     isPrivate: room.isPrivate,
     userCount: room.users.size,
-    canvasData: room.canvasData
+    canvasData: room.getCanvasData()
   });
 });
 
@@ -134,10 +150,12 @@ io.on('connection', (socket) => {
       socket.leave(previousRoomId);
       const previousRoom = rooms.get(previousRoomId);
       if (previousRoom) {
-        previousRoom.removeUser(socket.id);
-        socket.to(previousRoomId).emit('user-left', {
+        previousRoom.removeUser(socket.id);        socket.to(previousRoomId).emit('user-left', {
           userId: socket.id,
-          users: Array.from(previousRoom.users.values())
+          users: Array.from(previousRoom.users.entries()).map(([id, userData]) => ({
+            id,
+            ...userData
+          }))
         });
       }
     }
@@ -145,19 +163,23 @@ io.on('connection', (socket) => {
     // Join new room
     socket.join(roomId);
     room.addUser(socket.id, userData);
-    userRooms.set(socket.id, roomId);
-
-    // Send current canvas state to the new user
+    userRooms.set(socket.id, roomId);    // Send current canvas state to the new user
     socket.emit('canvas-state', {
-      canvasData: room.canvasData,
-      users: Array.from(room.users.values())
+      canvasData: room.getCanvasData(),
+      users: Array.from(room.users.entries()).map(([id, userData]) => ({
+        id,
+        ...userData
+      }))
     });
 
     // Notify others in the room
     socket.to(roomId).emit('user-joined', {
       userId: socket.id,
       userData,
-      users: Array.from(room.users.values())
+      users: Array.from(room.users.entries()).map(([id, userData]) => ({
+        id,
+        ...userData
+      }))
     });
 
     console.log(`User ${socket.id} joined room ${roomId}`);
@@ -282,10 +304,12 @@ io.on('connection', (socket) => {
     if (roomId) {
       const room = rooms.get(roomId);
       if (room) {
-        room.removeUser(socket.id);
-        socket.to(roomId).emit('user-left', {
+        room.removeUser(socket.id);        socket.to(roomId).emit('user-left', {
           userId: socket.id,
-          users: Array.from(room.users.values())
+          users: Array.from(room.users.entries()).map(([id, userData]) => ({
+            id,
+            ...userData
+          }))
         });
         
         // Clean up empty rooms

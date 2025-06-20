@@ -51,4 +51,4 @@ export interface CanvasElement {
   timestamp: Date
 }
 
-export type Tool = 'pen' | 'eraser' | 'rectangle' | 'circle' | 'text'
+export type Tool = 'pen' | 'eraser' | 'rectangle' | 'circle' | 'text' | 'line'

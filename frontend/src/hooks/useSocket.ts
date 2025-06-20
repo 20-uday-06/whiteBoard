@@ -8,7 +8,6 @@ export const useSocket = (roomId: string, userData: { name: string; color: strin
   const [isConnected, setIsConnected] = useState(false)
   const [users, setUsers] = useState<User[]>([])
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
-
   useEffect(() => {
     const socket = socketService.connect(process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000')
 
@@ -29,8 +28,9 @@ export const useSocket = (roomId: string, userData: { name: string; color: strin
       setUsers(data.users)
     }
 
-    const handleCanvasState = (data: { users: User[] }) => {
+    const handleCanvasState = (data: { canvasData: any[]; users: User[] }) => {
       setUsers(data.users)
+      // The canvas restoration is handled in the Canvas component
     }
 
     const handleChatMessage = (message: ChatMessage) => {
