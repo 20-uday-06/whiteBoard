@@ -52,15 +52,23 @@ call npm run build
 if %errorlevel% equ 0 (
     echo ✅ Build successful! Ready for deployment.
     echo.
-    echo 🚀 To deploy to Vercel:
-    echo 1. Install Vercel CLI: npm install -g vercel
+    echo 🚀 Deploy Options:
+    echo.
+    echo 🌐 Option 1: Vercel Website ^(Recommended - Easiest^)
+    echo 1. Go to https://vercel.com
+    echo 2. Click 'New Project' → 'Import Git Repository'
+    echo 3. Select your repository: 20-uday-06/whiteBoard
+    echo 4. Set Root Directory to: frontend
+    echo 5. Add Environment Variable:
+    echo    NEXT_PUBLIC_BACKEND_URL = https://whiteboard-collaboration-backend.onrender.com
+    echo 6. Click Deploy!
+    echo.
+    echo � Option 2: Vercel CLI
+    echo 1. Install: npm install -g vercel
     echo 2. Login: vercel login  
     echo 3. Deploy: vercel --prod
     echo.
-    echo 📋 Environment variables needed on Vercel:
-    echo - NEXT_PUBLIC_BACKEND_URL: https://whiteboard-collaboration-backend.onrender.com
-    echo.
-    echo 💡 After deployment, remember to update your Render backend's FRONTEND_URL!
+    echo �💡 After deployment, update your Render backend's FRONTEND_URL to your new Vercel domain!
 ) else (
     echo ❌ Build failed! Please fix the errors before deploying.
 )

@@ -17,18 +17,42 @@ setup-git.bat     # Windows
 git remote add origin <your-repository-url>
 ```
 
-### 2. Deploy to Vercel
+## 🚀 Deploy to Vercel
+
+### **Method 1: Vercel Website (Recommended - Easiest)**
+
+1. **Go to [vercel.com](https://vercel.com) and sign in**
+
+2. **Import Project**:
+   - Click "New Project" or "Add New Project"
+   - Choose "Import Git Repository"
+   - Connect your GitHub account if not already connected
+   - Select your repository: `20-uday-06/whiteBoard`
+
+3. **Configure Project**:
+   - **Root Directory**: Set to `frontend` (this is important!)
+   - **Build Command**: `npm run build` (auto-detected)
+   - **Output Directory**: `.next` (auto-detected)
+   - **Install Command**: `npm install` (auto-detected)
+
+4. **Environment Variables**:
+   - Click "Environment Variables"
+   - Add: `NEXT_PUBLIC_BACKEND_URL` = `https://whiteboard-collaboration-backend.onrender.com`
+
+5. **Deploy**:
+   - Click "Deploy"
+   - Wait for deployment to complete (usually 1-2 minutes)
+
+### **Method 2: Vercel CLI**
 ```bash
 # Run the deployment script
 ./deploy-vercel.sh    # Linux/Mac
 deploy-vercel.bat     # Windows
-```
 
-The script will automatically:
-1. ✅ Commit and push changes to Git
-2. ✅ Install dependencies
-3. ✅ Test production build
-4. ✅ Provide deployment instructions
+# Then in frontend directory:
+cd frontend
+npx vercel --prod
+```
 
 ### Steps to Deploy
 
