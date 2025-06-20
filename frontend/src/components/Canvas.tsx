@@ -29,7 +29,6 @@ const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
       const context = canvas.getContext('2d')
       if (!context) return
 
-      // Set canvas size
       const rect = canvas.getBoundingClientRect()
       canvas.width = rect.width * window.devicePixelRatio
       canvas.height = rect.height * window.devicePixelRatio
@@ -45,7 +44,6 @@ const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
           contextRef.current?.beginPath()
           contextRef.current?.moveTo(data.x, data.y)
           
-          // Store user drawing start position
           const user = users.find(u => u.id === data.userId)
           if (user) {
             setUserStrokes(prev => {
@@ -74,7 +72,7 @@ const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
             contextRef.current.stroke()
           }
 
-          // Update user stroke positions
+          
           setUserStrokes(prev => {
             const newMap = new Map(prev)
             const existing = newMap.get(data.userId)
@@ -91,7 +89,7 @@ const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
           contextRef.current.globalCompositeOperation = 'source-over'
         }
         
-        // Clear user stroke tracking after a delay to show username
+        
         setTimeout(() => {
           setUserStrokes(prev => {
             const newMap = new Map(prev)
@@ -100,19 +98,19 @@ const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
             }
             return newMap
           })
-        }, 2000) // Show username for 2 seconds after drawing
+        }, 2000) 
       }
 
       const handleCanvasState = (data: { canvasData: any[], users: any[] }) => {
-        // Restore canvas from server state
+        
         if (data.canvasData && contextRef.current) {
           const context = contextRef.current
           const canvas = canvasRef.current
           if (canvas) {
-            // Clear canvas first
+            
             context.clearRect(0, 0, canvas.width, canvas.height)
             
-            // Redraw all elements
+            
             data.canvasData.forEach(element => {
               if (element.tool === 'pen' || element.tool === 'eraser') {
                 if (element.path && element.path.length > 1) {
@@ -172,7 +170,7 @@ const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
         socket.off('canvas-cleared', handleCanvasCleared)
         socket.off('canvas-state', handleCanvasState)
       }
-    }, [socket])    // Update canvas context properties when color or line width changes
+    }, [socket])
     useEffect(() => {
       const context = contextRef.current
       if (context) {
@@ -180,7 +178,7 @@ const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
         context.lineWidth = lineWidth
         context.fillStyle = currentColor
         
-        // Force context update by creating a new path
+        
         context.beginPath()
         context.closePath()
       }
@@ -244,7 +242,7 @@ const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
           context.globalCompositeOperation = 
             currentTool === 'eraser' ? 'destination-out' : 'source-over'
           
-          // Ensure color and line width are properly set
+          
           if (currentTool === 'pen') {
             context.strokeStyle = currentColor
             context.fillStyle = currentColor
@@ -268,7 +266,7 @@ const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
     const handleMouseMove = (e: React.MouseEvent) => {
       const pos = getMousePos(e)
 
-      // Send cursor position for collaborative cursor
+      
       socket.emit('cursor-move', { x: pos.x, y: pos.y })
 
       if (!isDrawing) return
@@ -357,7 +355,7 @@ const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
           onMouseUp={handleMouseUp}
           onMouseLeave={() => setIsDrawing(false)}
         />
-          {/* User cursors */}
+          
         {users.map((user) => (
           user.cursor && user.id !== socket.id && (
             <div
@@ -380,11 +378,11 @@ const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
           )
         ))}
 
-        {/* User stroke names */}
+       
         {Array.from(userStrokes.entries()).map(([userId, strokeData]) => {
           if (strokeData.positions.length === 0) return null
           
-          // Show username at the latest position
+          
           const latestPos = strokeData.positions[strokeData.positions.length - 1]
           return (
             <div

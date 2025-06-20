@@ -25,7 +25,7 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
   const [showUsers, setShowUsers] = useState(false)
   const [roomInfo, setRoomInfo] = useState<{ name: string; isPrivate: boolean } | null>(null)
   
-  // Generate random user data
+  
   const [userData] = useState(() => ({
     name: `User${Math.floor(Math.random() * 1000)}`,
     color: `hsl(${Math.floor(Math.random() * 360)}, 70%, 50%)`
@@ -33,7 +33,7 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
 
   const { isConnected, users, chatMessages, sendChatMessage, socket } = useSocket(roomId, userData)
 
-  // Fetch room information
+  
   useEffect(() => {
     const fetchRoomInfo = async () => {
       try {
@@ -109,7 +109,7 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
 
   return (
     <div className="h-screen bg-gradient-to-br from-slate-50 to-blue-50 relative overflow-hidden">
-      {/* Animated Background Pattern */}
+      
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{
           backgroundImage: `radial-gradient(circle at 1px 1px, rgba(0,0,0,0.15) 1px, transparent 0)`,
@@ -117,7 +117,7 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
         }} />
       </div>
 
-      {/* Floating Toolbar */}
+      
       <FloatingToolbar
         currentTool={currentTool}
         currentColor={currentColor}
@@ -131,14 +131,14 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
         onExport={handleExportCanvas}
       />
 
-      {/* Top Status Bar */}
+      
       <motion.div
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.2 }}
         className="absolute top-4 right-4 z-40 flex items-center gap-3"
       >
-        {/* Connection Status */}
+        
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
@@ -159,7 +159,7 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
           <span className="text-sm font-medium text-gray-700">
             {isConnected ? 'Connected' : 'Disconnected'}
           </span>
-        </motion.div>        {/* Room Info */}
+        </motion.div>        
         <Card variant="glass" className="px-4 py-2">
           <div className="text-sm">
             <div className="font-semibold text-gray-900">
@@ -169,7 +169,7 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
           </div>
         </Card>
 
-        {/* Action Buttons */}
+        
         <div className="flex gap-2">
           <Button
             variant="ghost"
@@ -202,7 +202,7 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
         </div>
       </motion.div>
 
-      {/* Main Canvas Area */}
+      
       <div className="absolute inset-0 pt-20">
         <Canvas
           ref={canvasRef}
@@ -214,7 +214,7 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
         />
       </div>
 
-      {/* Chat Sidebar */}
+      
       <AnimatePresence>
         {showChat && (
           <motion.div
@@ -248,7 +248,7 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
         )}
       </AnimatePresence>
 
-      {/* Users Sidebar */}
+      
       <AnimatePresence>
         {showUsers && (
           <motion.div

@@ -38,7 +38,7 @@ const Chat: React.FC<ChatProps> = ({ messages, users, currentUserId, onSendMessa
   
   return (
     <div className="h-full flex flex-col bg-gradient-to-b from-slate-50/95 to-white/95 backdrop-blur-xl">
-      {/* Messages */}
+      
       <div className="flex-1 overflow-y-auto p-3 space-y-3">
         <AnimatePresence>
           {messages.length === 0 ? (
@@ -78,7 +78,7 @@ const Chat: React.FC<ChatProps> = ({ messages, users, currentUserId, onSendMessa
                     isLastInGroup ? 'mb-4' : 'mb-1'
                   }`}
                 >
-                  {/* Avatar for other users (left side) - only show on last message in group */}
+                 
                   {!isCurrentUser && (
                     <motion.div
                       className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg flex-shrink-0 transition-opacity ${
@@ -99,7 +99,7 @@ const Chat: React.FC<ChatProps> = ({ messages, users, currentUserId, onSendMessa
                   )}
                   
                   <div className={`max-w-[70%] ${isCurrentUser ? 'mr-2' : 'ml-1'}`}>
-                    {/* Username and timestamp - only show on first message in group */}
+                    
                     {isFirstInGroup && (
                       <div className={`flex items-center gap-2 mb-1 ${isCurrentUser ? 'justify-end' : 'justify-start'}`}>
                         <span 
@@ -114,7 +114,7 @@ const Chat: React.FC<ChatProps> = ({ messages, users, currentUserId, onSendMessa
                       </div>
                     )}
 
-                    {/* Message Bubble */}
+                    
                     <motion.div
                       initial={{ scale: 0.8, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
@@ -137,7 +137,7 @@ const Chat: React.FC<ChatProps> = ({ messages, users, currentUserId, onSendMessa
                         boxShadow: '0 2px 12px rgba(59, 130, 246, 0.25)'
                       }}
                     >
-                      {/* Message tail - only on last message in group */}
+                      
                       {isLastInGroup && (
                         <div 
                           className={`absolute w-3 h-3 transform rotate-45 ${
@@ -157,7 +157,7 @@ const Chat: React.FC<ChatProps> = ({ messages, users, currentUserId, onSendMessa
                     </motion.div>
                   </div>
 
-                  {/* Avatar for current user (right side) - only show on last message in group */}
+                  
                   {isCurrentUser && (
                     <motion.div
                       className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-lg flex-shrink-0 transition-opacity ${

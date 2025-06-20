@@ -27,11 +27,11 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
   const [historyIndex, setHistoryIndex] = useState(-1)
   const [roomInfo, setRoomInfo] = useState<{ name: string; isPrivate: boolean } | null>(null)
   
-  // Get username from URL parameters or generate random name
+  
   const [userData] = useState(() => {
     let username = `User${Math.floor(Math.random() * 1000)}`
     
-    // Check if running in browser and extract username from URL params
+    
     if (typeof window !== 'undefined') {
       const urlParams = new URLSearchParams(window.location.search)
       const paramUsername = urlParams.get('username')
@@ -48,7 +48,7 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
 
   const { isConnected, users, chatMessages, sendChatMessage, socket, socketId } = useSocket(roomId, userData)
 
-  // Fetch room information
+  
   useEffect(() => {
     const fetchRoomInfo = async () => {
       try {
@@ -76,7 +76,7 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
   }, [])
   
   const handleLineWidthChange = useCallback((width: number) => {
-    console.log('Line width changing to:', width) // Debug log
+    console.log('Line width changing to:', width) 
     setLineWidth(width)  }, [])
   
   const saveCanvasState = useCallback(() => {
@@ -86,17 +86,17 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
       setDrawingHistory(prev => {
         const newHistory = prev.slice(0, historyIndex + 1)
         newHistory.push(dataURL)
-        return newHistory.slice(-20) // Keep only last 20 states
+        return newHistory.slice(-20) 
       })
       setHistoryIndex(prev => Math.min(prev + 1, 19))
     }
   }, [historyIndex])
 
   const handleUndo = useCallback(() => {
-    // First try server-side undo
+
     socket.emit('undo')
     
-    // Fallback to client-side undo if server doesn't respond
+    
     setTimeout(() => {
       if (historyIndex > 0 && canvasRef.current && drawingHistory.length > 0) {
         const canvas = canvasRef.current
@@ -132,10 +132,9 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
     }
   }, [historyIndex, drawingHistory])
 
-  // Save canvas state after drawing operations
+  
   React.useEffect(() => {
     const handleDrawEnd = () => {
-      // Small delay to ensure drawing is complete
       setTimeout(saveCanvasState, 100)
     }
 
@@ -160,7 +159,6 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
       const context = canvas.getContext('2d')
       
       if (context) {
-        // Create a new canvas with white background
         const exportCanvas = document.createElement('canvas')
         const exportContext = exportCanvas.getContext('2d')
         
@@ -168,13 +166,11 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
           exportCanvas.width = canvas.width
           exportCanvas.height = canvas.height
           
-          // Fill with white background
           exportContext.fillStyle = '#FFFFFF'
           exportContext.fillRect(0, 0, exportCanvas.width, exportCanvas.height)
           
-          // Draw the original canvas on top
           exportContext.drawImage(canvas, 0, 0)
-            // Create download link
+
           const link = document.createElement('a')
           const roomName = roomInfo?.name || 'whiteboard'
           const sanitizedRoomName = roomName.replace(/[^a-z0-9]/gi, '_').toLowerCase()
@@ -207,7 +203,7 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
 
   return (
     <div className="h-screen bg-gradient-to-br from-slate-50 to-blue-50 relative overflow-hidden">
-      {/* Animated Background Pattern */}
+      
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{
           backgroundImage: `radial-gradient(circle at 1px 1px, rgba(0,0,0,0.15) 1px, transparent 0)`,
@@ -215,7 +211,7 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
         }} />
       </div>
 
-      {/* Floating Toolbar */}
+
       <FloatingToolbar
         currentTool={currentTool}
         currentColor={currentColor}
@@ -227,14 +223,14 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
         onRedo={handleRedo}
         onClear={handleClearCanvas}
         onExport={handleExportCanvas}
-      />      {/* Top Status Bar */}
+      />      
       <motion.div
         initial={{ y: -50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ delay: 0.2 }}
         className="absolute top-4 right-4 z-30 flex items-center gap-3"
       >
-        {/* Connection Status */}
+        
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
@@ -255,7 +251,7 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
           <span className="text-sm font-medium text-gray-700">
             {isConnected ? 'Connected' : 'Disconnected'}
           </span>
-        </motion.div>        {/* Room Info */}
+        </motion.div>        
         <Card variant="glass" className="px-4 py-2">
           <div className="text-sm">
             <div className="font-semibold text-gray-900">
@@ -265,7 +261,7 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
           </div>
         </Card>
 
-        {/* Action Buttons */}
+        
         <div className="flex gap-2">
           <Button
             variant="ghost"
@@ -298,7 +294,7 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
         </div>
       </motion.div>
 
-      {/* Main Canvas Area */}
+      
       <div className="absolute inset-0 pt-20">
         <Canvas
           ref={canvasRef}
@@ -310,7 +306,7 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
         />
       </div>
 
-      {/* Chat Sidebar */}
+      
       <AnimatePresence>
         {showChat && (
           <motion.div
@@ -342,7 +338,7 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
         )}
       </AnimatePresence>
 
-      {/* Users Sidebar */}
+
       <AnimatePresence>
         {showUsers && (
           <motion.div

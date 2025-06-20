@@ -38,7 +38,7 @@ const Chat: React.FC<ChatProps> = ({ messages, users, onSendMessage, onClose }) 
 
   return (
     <div className="h-full flex flex-col bg-white/50 backdrop-blur-sm">
-      {/* Messages */}
+      
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
         <AnimatePresence>
           {messages.length === 0 ? (
@@ -94,7 +94,7 @@ const Chat: React.FC<ChatProps> = ({ messages, users, onSendMessage, onClose }) 
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
+      
       <motion.form
         initial={{ y: 50, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}

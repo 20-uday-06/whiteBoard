@@ -8,8 +8,215 @@ A real-time collaborative whiteboard web application that enables multiple users
 
 **[Try the Live Application](https://whiteboard-ten-blush.vercel.app)**
 
-## Features
+## Local Development
 
+### Prerequisites
+
+- **Node.js** v18+ installed on your system
+- **npm** or **yarn** package manager
+- **Git** for version control
+
+### Quick Start
+
+#### 1. Clone the Repository
+
+```bash
+git clone https://github.com/20-uday-06/whiteBoard.git
+cd whiteBoard/collaborative-whiteboard
+```
+
+#### 2. Backend Setup
+
+```bash
+cd backend
+npm install
+```
+
+Create environment file:
+```bash
+cp .env.example .env
+```
+
+Configure your `.env` file:
+```env
+PORT=5000
+FRONTEND_URL=http://localhost:3000
+MONGODB_URI=mongodb://localhost:27017/collaborative-whiteboard
+NODE_ENV=development
+```
+
+Start the backend server:
+```bash
+npm start
+```
+
+Server will run on `http://localhost:5000`
+
+#### 3. Frontend Setup
+
+Open a new terminal:
+```bash
+cd frontend
+npm install
+```
+
+Create environment file:
+```bash
+cp .env.example .env.local
+```
+
+Configure your `.env.local` file:
+```env
+NEXT_PUBLIC_BACKEND_URL=http://localhost:5000
+```
+
+Start the development server:
+```bash
+npm run dev
+```
+
+Application will be available at `http://localhost:3000`
+
+### Development Scripts
+
+#### Backend Commands
+```bash
+npm start
+npm run dev
+npm run test
+```
+
+#### Frontend Commands
+```bash
+npm run dev
+npm run build
+npm run start
+npm run lint
+npm run type-check
+```
+
+### Testing Your Setup
+
+1. Open `http://localhost:3000`
+2. Click **Create New Room**
+3. Enter your name and room name
+4. Start drawing
+5. Open another browser tab with the same room URL to test real-time collaboration
+
+### Development Tips
+
+#### Hot Reload
+- Frontend: Automatic reload on file changes
+- Backend: Use `npm run dev` for automatic restart with nodemon
+
+#### Debugging
+- Frontend: Open browser DevTools <kbd>F12</kbd>
+- Backend: Check terminal logs
+- Network: Monitor WebSocket connections in DevTools
+
+#### Keyboard Shortcuts
+- <kbd>Ctrl + Z</kbd> / <kbd>Cmd + Z</kbd> - Undo
+- <kbd>Ctrl + Y</kbd> / <kbd>Cmd + Y</kbd> - Redo
+- <kbd>Delete</kbd> - Clear canvas
+- <kbd>Ctrl + S</kbd> / <kbd>Cmd + S</kbd> - Export canvas
+
+### Database Setup (Optional)
+
+For local development, you can use MongoDB locally or MongoDB Atlas:
+
+#### Local MongoDB
+```bash
+# Install MongoDB locally or use Docker
+docker run -d -p 27017:27017 --name mongo mongodb/mongodb-community-server
+```
+
+#### MongoDB Atlas
+1. Create account at [mongodb.com](https://mongodb.com)
+2. Create new cluster
+3. Get connection string
+4. Update `MONGODB_URI` in `.env`
+
+### Environment Variables Reference
+
+#### Backend (.env)
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `PORT` | Server port | `5000` |
+| `FRONTEND_URL` | Frontend URL for CORS | `http://localhost:3000` |
+| `MONGODB_URI` | MongoDB connection string | `mongodb://localhost:27017/collaborative-whiteboard` |
+| `NODE_ENV` | Environment mode | `development` |
+
+#### Frontend (.env.local)
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `NEXT_PUBLIC_BACKEND_URL` | Backend API URL | `http://localhost:5000` |
+
+### Troubleshooting
+
+#### Common Issues
+
+**CORS Errors**
+- Ensure `FRONTEND_URL` in backend matches your frontend URL
+- Check both servers are running
+
+**Socket Connection Failed**
+- Verify `NEXT_PUBLIC_BACKEND_URL` points to running backend
+- Check firewall settings
+
+**Build Failures**
+- Run `npm run type-check` to identify TypeScript errors
+- Ensure all dependencies are installed
+
+**MongoDB Connection Issues**
+- Verify MongoDB is running
+- Check connection string format
+- Ensure network access for Atlas
+
+## Project Structure
+
+```
+collaborative-whiteboard/
+├── backend/
+│   ├── server.js
+│   ├── package.json
+│   ├── .env
+│   └── .env.example
+├── frontend/
+│   ├── src/
+│   │   ├── app/
+│   │   │   ├── layout.tsx
+│   │   │   ├── page.tsx
+│   │   │   ├── globals.css
+│   │   │   └── room/[roomId]/
+│   │   │       └── page.tsx
+│   │   ├── components/
+│   │   │   ├── Whiteboard.tsx
+│   │   │   ├── Canvas.tsx
+│   │   │   ├── Chat.tsx
+│   │   │   ├── UserList.tsx
+│   │   │   └── ui/
+│   │   │       ├── Button.tsx
+│   │   │       └── Card.tsx
+│   │   ├── hooks/
+│   │   │   └── useSocket.ts
+│   │   ├── utils/
+│   │   │   └── socket.ts
+│   │   └── types/
+│   │       └── index.ts
+│   ├── package.json
+│   ├── next.config.js
+│   ├── tailwind.config.js
+│   ├── tsconfig.json
+│   ├── .env.local
+│   └── .env.example
+└── README.md
+```
+
+---
+
+
+
+## Features
 ### Drawing Tools
 - Freehand pen with customizable colors and brush sizes
 - Shape tools (rectangles, circles)
@@ -41,63 +248,186 @@ A real-time collaborative whiteboard web application that enables multiple users
 
 ## Tech Stack
 
-**Frontend (Vercel)**
-- Next.js 14 with App Router
-- TypeScript
-- Tailwind CSS
-- Framer Motion
-- HTML5 Canvas
-- Socket.io Client
-- React Colorful
+### Frontend (Vercel)
+- **Next.js 14** with App Router
+- **TypeScript** for type safety
+- **Tailwind CSS** for styling
+- **Framer Motion** for animations
+- **HTML5 Canvas** for drawing
+- **Socket.io Client** for real-time communication
+- **React Colorful** for color picker
 
-**Backend (Render)**
-- Node.js
-- Express.js
-- Socket.io
-- MongoDB
-- CORS
+### Backend (Render)
+- **Node.js** runtime
+- **Express.js** web framework
+- **Socket.io** for WebSocket connections
+- **MongoDB** for data persistence
+- **CORS** for cross-origin requests
 
-**Development & Deployment**
-- ESLint
-- Vercel (Frontend hosting)
-- Render (Backend hosting)
-- Git
+### Development & Deployment
+- **ESLint** for code linting
+- **TypeScript** for type checking
+- **Vercel** for frontend hosting
+- **Render** for backend hosting
+- **Git** for version control
 
-## Local Development
+## Production Deployment
 
-### Prerequisites
-- Node.js v18+
-- npm or yarn
-- Git
+### Frontend Deployment (Vercel)
 
-### Setup
+#### Method 1: Vercel Website
+1. Go to [vercel.com](https://vercel.com)
+2. Click **Import Project**
+3. Connect GitHub and select repository
+4. Set **Root Directory** to `frontend`
+5. Add environment variable:
+   - `NEXT_PUBLIC_BACKEND_URL`: Your backend URL
+6. Click **Deploy**
+
+#### Method 2: Vercel CLI
 ```bash
-git clone https://github.com/20-uday-06/whiteBoard.git
-cd whiteBoard
-```
-
-### Backend
-```bash
-cd backend
-npm install
-cp .env.example .env
-npm start
-```
-
-### Frontend
-```bash
+npm i -g vercel
 cd frontend
-npm install
-cp .env.example .env.local
-npm run dev
+vercel --prod
 ```
 
-### Environment Variables
+### Backend Deployment (Render)
 
-**Backend (.env)**
+1. Create account at [render.com](https://render.com)
+2. Click **New Web Service**
+3. Connect GitHub repository
+4. Configure:
+   - **Build Command**: `cd backend && npm install`
+   - **Start Command**: `cd backend && npm start`
+5. Add environment variables:
+   - `FRONTEND_URL`: Your Vercel frontend URL
+   - `MONGODB_URI`: Your MongoDB connection string
+   - `NODE_ENV`: `production`
+6. Click **Deploy**
+
+### Production Environment Variables
+
+#### Vercel (Frontend)
 ```env
-PORT=5000
-FRONTEND_URL=http://localhost:3000
+NEXT_PUBLIC_BACKEND_URL=https://your-backend.onrender.com
+```
+
+#### Render (Backend)
+```env
+FRONTEND_URL=https://your-app.vercel.app
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/database
+NODE_ENV=production
+PORT=auto-assigned
+```
+
+## Usage Guide
+
+### Creating a Room
+1. Visit the application
+2. Click **Create New Room**
+3. Enter your name and room name
+4. Choose public or private room
+5. Click **Create Room**
+6. Share the room URL with collaborators
+
+### Drawing Tools
+- **Pen Tool**: Freehand drawing
+- **Rectangle**: Click and drag to create rectangles
+- **Circle**: Click and drag to create circles
+- **Text**: Click to add text at cursor position
+- **Eraser**: Remove drawings by dragging over them
+
+### Collaboration Features
+- **Chat**: Click chat icon to open messaging
+- **Users**: Click users icon to see online participants
+- **Export**: Click download to save canvas as PNG
+- **Clear**: Remove all drawings (affects all users)
+
+## API Reference
+
+### REST Endpoints
+
+```http
+GET /api/rooms
+```
+Get list of public rooms
+
+```http
+POST /api/rooms
+```
+Create a new room
+
+```http
+GET /api/rooms/:roomId
+```
+Get room details by ID
+
+### Socket Events
+
+#### Client to Server
+- `join-room` - Join a specific room
+- `draw-start` - Start drawing stroke
+- `drawing` - Drawing data
+- `draw-end` - End drawing stroke
+- `chat-message` - Send chat message
+- `clear-canvas` - Clear the canvas
+
+#### Server to Client
+- `canvas-state` - Initial canvas state
+- `user-joined` - User joined room
+- `user-left` - User left room
+- `draw-start` - User started drawing
+- `drawing` - Drawing data from user
+- `draw-end` - User finished drawing
+- `chat-message` - Chat message received
+- `canvas-cleared` - Canvas was cleared
+
+## Contributing
+
+### Development Guidelines
+- Follow TypeScript best practices
+- Add proper error handling
+- Test on multiple browsers
+- Update documentation as needed
+- Follow existing code style
+
+### Getting Started
+1. Fork the repository
+2. Clone your fork locally
+3. Create a feature branch
+4. Make your changes
+5. Test thoroughly
+6. Submit a pull request
+
+### Code Style
+- Use TypeScript strict mode
+- Follow ESLint configuration
+- Use meaningful variable names
+- Add comments for complex logic
+- Keep components small and focused
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Author
+
+**Uday Tyagi**
+- GitHub: [@20-uday-06](https://github.com/20-uday-06)
+- Repository: [whiteBoard](https://github.com/20-uday-06/whiteBoard)
+
+## Acknowledgments
+
+- [Socket.io](https://socket.io/) - Real-time communication
+- [Next.js](https://nextjs.org/) - React framework
+- [Tailwind CSS](https://tailwindcss.com/) - CSS framework
+- [Framer Motion](https://www.framer.com/motion/) - Animation library
+- [Vercel](https://vercel.com/) - Frontend deployment
+- [Render](https://render.com/) - Backend deployment
+
+---
+
+**Built for the developer community**
 MONGODB_URI=mongodb://localhost:27017/collaborative-whiteboard
 NODE_ENV=development
 ```
@@ -164,52 +494,6 @@ NEXT_PUBLIC_BACKEND_URL=https://whiteboard-collaboration-backend.onrender.com
 - Export your work as PNG
 - Undo/redo actions as needed
 
-## 📁 Project Structure
-
-```
-collaborative-whiteboard/
-├── 📁 backend/                    # Node.js + Express + Socket.io
-│   ├── server.js                  # Main server with API routes
-│   ├── package.json              # Backend dependencies
-│   ├── .env                      # Environment variables
-│   └── .env.example              # Environment template
-├── 📁 frontend/                  # Next.js + TypeScript + Tailwind
-│   ├── 📁 src/
-│   │   ├── 📁 app/               # Next.js App Router
-│   │   │   ├── layout.tsx        # Root layout
-│   │   │   ├── page.tsx          # Home page with room selection
-│   │   │   ├── globals.css       # Global styles
-│   │   │   └── 📁 room/[roomId]/ # Dynamic room pages
-│   │   │       └── page.tsx      # Whiteboard room interface
-│   │   ├── 📁 components/        # Reusable React components
-│   │   │   ├── Whiteboard.tsx    # Main whiteboard container
-│   │   │   ├── Canvas.tsx        # Drawing canvas logic
-│   │   │   ├── Toolbar.tsx       # Drawing tools
-│   │   │   ├── Chat.tsx          # Real-time chat
-│   │   │   ├── UserList.tsx      # Online users display
-│   │   │   └── 📁 ui/            # UI components
-│   │   │       ├── Button.tsx    # Custom button component
-│   │   │       └── Card.tsx      # Card UI component
-│   │   ├── 📁 hooks/             # Custom React hooks
-│   │   │   └── useSocket.ts      # Socket.io integration
-│   │   ├── 📁 utils/             # Utility functions
-│   │   │   └── socket.ts         # Socket service class
-│   │   └── 📁 types/             # TypeScript definitions
-│   │       └── index.ts          # Type definitions
-│   ├── package.json              # Frontend dependencies
-│   ├── next.config.js            # Next.js configuration
-│   ├── tailwind.config.js        # Tailwind CSS config
-│   ├── tsconfig.json             # TypeScript config
-│   ├── .env.local                # Local environment variables
-│   ├── .env.production           # Production environment variables
-│   └── .env.example              # Environment template
-├── 📁 deployment/                # Deployment scripts and guides
-│   ├── deploy-vercel.sh          # Linux/Mac deployment script
-│   ├── deploy-vercel.bat         # Windows deployment script
-│   ├── DEPLOYMENT_VERCEL.md      # Deployment guide
-│   └── VERCEL_WEB_DEPLOY.md      # Web deployment guide
-└── README.md                     # This file
-```
 
 ## 🚀 Deployment
 

@@ -30,7 +30,6 @@ const io = socketIo(server, {
   }
 });
 
-// Middleware
 app.use(cors({
   origin: [
     process.env.FRONTEND_URL || "http://localhost:3000",
@@ -41,7 +40,7 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Basic route for health check
+//health check
 app.get('/', (req, res) => {
   res.json({
     message: 'Collaborative Whiteboard Backend is running!',
@@ -51,7 +50,6 @@ app.get('/', (req, res) => {
   });
 });
 
-// Health check route
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
@@ -60,11 +58,10 @@ app.get('/health', (req, res) => {
   });
 });
 
-// Store room data in memory (in production, use Redis or database)
+
 const rooms = new Map();
 const userRooms = new Map();
 
-// Room management
 class Room {
   constructor(id, name, isPrivate = false, creatorId = null) {
     this.id = id;
@@ -106,7 +103,7 @@ class Room {
   }
 
   undoLastAction(userId) {
-    // Find and remove the last action by this user
+
     for (let i = this.canvasData.length - 1; i >= 0; i--) {
       if (this.canvasData[i].userId === userId) {
         const removedElement = this.canvasData.splice(i, 1)[0];
@@ -117,7 +114,6 @@ class Room {
   }
 }
 
-// REST API Routes
 app.get('/api/rooms', (req, res) => {
   const publicRooms = Array.from(rooms.values())
     .filter(room => !room.isPrivate)
@@ -161,11 +157,10 @@ app.get('/api/rooms/:roomId', (req, res) => {
   });
 });
 
-// Socket.io connection handling
+// Socket.io connection
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
 
-  // Join room
   socket.on('join-room', (data) => {
     const { roomId, userData } = data;
     const room = rooms.get(roomId);
@@ -175,7 +170,6 @@ io.on('connection', (socket) => {
       return;
     }
 
-    // Leave previous room if any
     const previousRoomId = userRooms.get(socket.id);
     if (previousRoomId) {
       socket.leave(previousRoomId);
@@ -191,10 +185,10 @@ io.on('connection', (socket) => {
       }
     }
 
-    // Join new room
+
     socket.join(roomId);
     room.addUser(socket.id, userData);
-    userRooms.set(socket.id, roomId);    // Send current canvas state to the new user
+    userRooms.set(socket.id, roomId); 
     socket.emit('canvas-state', {
       canvasData: room.getCanvasData(),
       users: Array.from(room.users.entries()).map(([id, userData]) => ({
@@ -203,7 +197,6 @@ io.on('connection', (socket) => {
       }))
     });
 
-    // Notify others in the room
     socket.to(roomId).emit('user-joined', {
       userId: socket.id,
       userData,
@@ -216,7 +209,6 @@ io.on('connection', (socket) => {
     console.log(`User ${socket.id} joined room ${roomId}`);
   });
 
-  // Handle drawing events
   socket.on('draw-start', (data) => {
     const roomId = userRooms.get(socket.id);
     if (roomId) {
@@ -242,7 +234,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Handle shape creation
   socket.on('shape-created', (data) => {
     const roomId = userRooms.get(socket.id);
     if (roomId) {
@@ -254,7 +245,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Handle text creation
   socket.on('text-created', (data) => {
     const roomId = userRooms.get(socket.id);
     if (roomId) {
@@ -266,7 +256,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Handle eraser
   socket.on('erase', (data) => {
     const roomId = userRooms.get(socket.id);
     if (roomId) {
@@ -274,7 +263,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Handle undo
   socket.on('undo', () => {
     const roomId = userRooms.get(socket.id);
     if (roomId) {
@@ -288,7 +276,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Handle clear canvas
   socket.on('clear-canvas', () => {
     const roomId = userRooms.get(socket.id);
     if (roomId) {
@@ -300,7 +287,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Handle cursor movement
   socket.on('cursor-move', (data) => {
     const roomId = userRooms.get(socket.id);
     if (roomId) {
@@ -308,7 +294,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Handle chat messages
   socket.on('chat-message', (data) => {
     const roomId = userRooms.get(socket.id);
     if (roomId) {
@@ -327,7 +312,6 @@ io.on('connection', (socket) => {
     }
   });
 
-  // Handle disconnect
   socket.on('disconnect', () => {
     console.log(`User disconnected: ${socket.id}`);
     
@@ -343,7 +327,6 @@ io.on('connection', (socket) => {
           }))
         });
         
-        // Clean up empty rooms
         if (room.users.size === 0) {
           rooms.delete(roomId);
         }

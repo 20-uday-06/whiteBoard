@@ -17,7 +17,7 @@ class SocketService {
       timeout: 5000
     })
     
-    // Re-attach all listeners
+
     this.listeners.forEach((callbacks, event) => {
       callbacks.forEach(callback => {
         this.socket?.on(event, callback)

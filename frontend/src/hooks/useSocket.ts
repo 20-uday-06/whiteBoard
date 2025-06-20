@@ -34,7 +34,6 @@ export const useSocket = (roomId: string, userData: { name: string; color: strin
 
     const handleCanvasState = (data: { canvasData: any[]; users: User[] }) => {
       setUsers(data.users)
-      // The canvas restoration is handled in the Canvas component
     }
 
     const handleChatMessage = (message: ChatMessage) => {
@@ -45,7 +44,6 @@ export const useSocket = (roomId: string, userData: { name: string; color: strin
       console.error('Socket error:', error.message)
     }
 
-    // Set up event listeners
     socketService.on('connect', handleConnect)
     socketService.on('disconnect', handleDisconnect)
     socketService.on('user-joined', handleUserJoined)

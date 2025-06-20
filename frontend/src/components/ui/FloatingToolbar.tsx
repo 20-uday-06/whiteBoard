@@ -254,7 +254,6 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
             top: colorPickerPosition.y,
           }}
         >
-          {/* Preset Colors */}
           <div className="grid grid-cols-3 gap-2 mb-3">
             {colors.map((color) => (
               <motion.button
@@ -276,7 +275,7 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
             ))}
           </div>
           
-          {/* Custom Color Picker Button */}
+
           <div className="border-t border-gray-200 pt-3">
             <motion.button
               whileHover={{ scale: 1.02 }}
@@ -289,7 +288,7 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
             </motion.button>
           </div>
           
-          {/* Custom Color Picker */}
+          
           {showCustomColorPicker && (
             <div className="mt-3 border-t border-gray-200 pt-3">
               <input
@@ -309,7 +308,7 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
         document.body
       )}
 
-      {/* Line Width Picker Portal */}
+      
       {showLineWidthPicker && typeof window !== 'undefined' && createPortal(
         <motion.div
           initial={{ opacity: 0, scale: 0.9, y: -10 }}
@@ -348,7 +347,7 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
         </motion.div>,        document.body
       )}
 
-      {/* Eraser Size Picker Portal */}
+      
       {showEraserSizePicker && typeof window !== 'undefined' && createPortal(
         <motion.div
           initial={{ opacity: 0, scale: 0.9, y: -10 }}
