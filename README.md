@@ -315,7 +315,7 @@ NEXT_PUBLIC_BACKEND_URL=https://your-backend.onrender.com
 #### Render (Backend)
 ```env
 FRONTEND_URL=https://your-app.vercel.app
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/database
+MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/<database>
 NODE_ENV=production
 PORT=auto-assigned
 ```
