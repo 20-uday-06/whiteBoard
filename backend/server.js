@@ -29,6 +29,25 @@ const io = socketIo(server, {
 app.use(cors());
 app.use(express.json());
 
+// Basic route for health check
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Collaborative Whiteboard Backend is running!',
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
+  });
+});
+
+// Health check route
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+    uptime: process.uptime()
+  });
+});
+
 // Store room data in memory (in production, use Redis or database)
 const rooms = new Map();
 const userRooms = new Map();
