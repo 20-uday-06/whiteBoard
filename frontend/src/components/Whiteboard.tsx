@@ -25,6 +25,7 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
   const [showUsers, setShowUsers] = useState(false)
   const [drawingHistory, setDrawingHistory] = useState<string[]>([])
   const [historyIndex, setHistoryIndex] = useState(-1)
+  const [roomInfo, setRoomInfo] = useState<{ name: string; isPrivate: boolean } | null>(null)
   
   // Get username from URL parameters or generate random name
   const [userData] = useState(() => {
@@ -46,6 +47,25 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
   })
 
   const { isConnected, users, chatMessages, sendChatMessage, socket, socketId } = useSocket(roomId, userData)
+
+  // Fetch room information
+  useEffect(() => {
+    const fetchRoomInfo = async () => {
+      try {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000'}/api/rooms/${roomId}`)
+        if (response.ok) {
+          const roomData = await response.json()
+          setRoomInfo({ name: roomData.name, isPrivate: roomData.isPrivate })
+        }
+      } catch (error) {
+        console.error('Error fetching room info:', error)
+      }
+    }
+
+    if (roomId) {
+      fetchRoomInfo()
+    }
+  }, [roomId])
 
   const handleToolChange = useCallback((tool: Tool) => {
     setCurrentTool(tool)
@@ -154,16 +174,16 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
           
           // Draw the original canvas on top
           exportContext.drawImage(canvas, 0, 0)
-          
-          // Create download link
+            // Create download link
           const link = document.createElement('a')
-          link.download = `whiteboard-${roomId}-${Date.now()}.png`
+          const roomName = roomInfo?.name || 'whiteboard'
+          const sanitizedRoomName = roomName.replace(/[^a-z0-9]/gi, '_').toLowerCase()
+          link.download = `${sanitizedRoomName}-${Date.now()}.png`
           link.href = exportCanvas.toDataURL('image/png')
           link.click()
-        }
-      }
+        }      }
     }
-  }, [roomId])
+  }, [roomInfo])
 
   if (!socket) {
     return (
@@ -235,12 +255,12 @@ const Whiteboard: React.FC<WhiteboardProps> = ({ roomId }) => {
           <span className="text-sm font-medium text-gray-700">
             {isConnected ? 'Connected' : 'Disconnected'}
           </span>
-        </motion.div>
-
-        {/* Room Info */}
+        </motion.div>        {/* Room Info */}
         <Card variant="glass" className="px-4 py-2">
           <div className="text-sm">
-            <div className="font-semibold text-gray-900">Room: {roomId}</div>
+            <div className="font-semibold text-gray-900">
+              Room: {roomInfo?.name || 'Loading...'}
+            </div>
             <div className="text-gray-600">{users.length} user{users.length !== 1 ? 's' : ''} online</div>
           </div>
         </Card>

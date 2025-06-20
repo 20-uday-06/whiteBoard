@@ -68,11 +68,10 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
   const [colorPickerPosition, setColorPickerPosition] = React.useState({ x: 0, y: 0 })
   const [lineWidthPickerPosition, setLineWidthPickerPosition] = React.useState({ x: 0, y: 0 })
   const [eraserSizePickerPosition, setEraserSizePickerPosition] = React.useState({ x: 0, y: 0 })
-  // Refs for positioning
+  
   const colorButtonRef = React.useRef<HTMLButtonElement>(null)
   const lineWidthButtonRef = React.useRef<HTMLButtonElement>(null)
   const eraserButtonRef = React.useRef<HTMLButtonElement>(null)
-  // Close dropdowns when clicking outside
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as Element
@@ -98,7 +97,7 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
       >
         <div className="bg-white rounded-2xl shadow-xl border border-gray-200/50 p-3 backdrop-blur-sm">
           <div className="flex items-center gap-3 min-w-max">
-            {/* Drawing Tools */}            <div className="flex items-center gap-1 bg-gray-50/80 rounded-xl p-1">
+            <div className="flex items-center gap-1 bg-gray-50/80 rounded-xl p-1">
               {tools.map((tool) => {
                 const IconComponent = tool.icon
                 return (
@@ -142,13 +141,10 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
                     )}
                   </motion.button>
                 )
-              })}
-            </div>
+              })}            </div>
 
-            {/* Divider */}
             <div className="h-10 w-px bg-gray-300" />
 
-            {/* Color Picker */}
             <div className="relative dropdown-container">
               <motion.button
                 ref={colorButtonRef}
@@ -171,10 +167,8 @@ export const FloatingToolbar: React.FC<FloatingToolbarProps> = ({
                   className="w-4 h-4 rounded-full border-2 border-gray-300 shadow-sm"
                   style={{ backgroundColor: currentColor }}
                 />
-              </motion.button>
-            </div>
+              </motion.button>            </div>
 
-            {/* Line Width */}
             <div className="relative dropdown-container">
               <motion.button
                 ref={lineWidthButtonRef}

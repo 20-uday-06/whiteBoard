@@ -1,130 +1,100 @@
-# 🎨 Collaborative Whiteboard
+# Collaborative Whiteboard
 
-A real-time collaborative whiteboard web application that enables multiple users to draw, write, and interact simultaneously—replicating the experience of a physical whiteboard in the browser.
+A real-time collaborative whiteboard web application that enables multiple users to draw, write, and interact simultaneously.
 
-![Collaborative Whiteboard Demo](https://img.shields.io/badge/Status-Live-brightgreen) ![Node.js](https://img.shields.io/badge/Node.js-v18+-green) ![React](https://img.shields.io/badge/React-18+-blue) ![TypeScript](https://img.shields.io/badge/TypeScript-5+-blue) ![Deployed](https://img.shields.io/badge/Deployed-Vercel%20%2B%20Render-blue)
+![Status](https://img.shields.io/badge/Status-Live-brightgreen) ![Node.js](https://img.shields.io/badge/Node.js-v18+-green) ![React](https://img.shields.io/badge/React-18+-blue) ![TypeScript](https://img.shields.io/badge/TypeScript-5+-blue)
 
-## 🔗 Live Demo
+## Live Demo
 
-🚀 **[Try the Live Application](https://whiteboard-ten-blush.vercel.app)**
+**[Try the Live Application](https://whiteboard-ten-blush.vercel.app)**
 
-## 📌 Project Overview
+## Features
 
-This application provides a seamless collaborative drawing experience where multiple users can:
-- ✅ Draw and sketch in real-time across multiple devices
-- ✅ Create shapes (rectangles, circles) and add text
-- ✅ Chat while collaborating with built-in messaging
-- ✅ See live cursors and user presence indicators
-- ✅ Export their work as high-quality PNG images
-- ✅ Create public or private rooms for different groups
+### Drawing Tools
+- Freehand pen with customizable colors and brush sizes
+- Shape tools (rectangles, circles)
+- Text tool with custom styling
+- Eraser tool
+- Full spectrum color picker
 
-## ✨ Features
+### Real-Time Collaboration
+- WebSocket integration powered by Socket.io
+- Live cursor tracking
+- Instant synchronization across all users
+- Multi-user sessions
 
-### 🖊️ Drawing Tools
-- **Freehand Pen Tool** - Smooth drawing with customizable colors and brush sizes
-- **Shape Tools** - Rectangle and Circle creation
-- **Text Tool** - Add text with customizable styling
-- **Eraser Tool** - Remove content selectively
-- **Color Picker** - Full spectrum color selection with hex support
+### Canvas Management
+- Undo/Redo functionality
+- Clear canvas (affects all users)
+- Auto-save with state preservation
+- Responsive design for all devices
 
-### 🚀 Real-Time Collaboration
-- **WebSocket Integration** - Powered by Socket.io for instant updates
-- **Live Cursor Tracking** - See where other users are working
-- **Instant Synchronization** - All changes reflect immediately across all connected users
-- **Multi-User Sessions** - Support for unlimited concurrent users
+### Communication
+- Built-in real-time chat
+- User presence indicators
+- Color-coded user identification
 
-### 👥 Session Management
-- **Room Creation** - Create public or private rooms
-- **Shareable Links** - Easy room access via URLs
-- **User Presence** - See who's currently online
-- **Room Persistence** - Canvas state maintained during sessions
+### Export & Sharing
+- PNG export with white background
+- Shareable room URLs
+- Public and private rooms
 
-### 🎛️ Canvas Management
-- **Undo/Redo** - Step-by-step action reversal with history tracking
-- **Clear Canvas** - Reset the entire workspace for all users
-- **Auto-Save** - Canvas state automatically preserved and synchronized
-- **Responsive Design** - Optimized for desktop, tablet, and mobile devices
-- **High Performance** - Smooth drawing even with multiple concurrent users
+## Tech Stack
 
-### 💾 Export & Sharing
-- **PNG Export** - Download whiteboard as high-quality images with white background
-- **Room Sharing** - Share room URLs for easy collaboration
-- **Real-time Backup** - Canvas state maintained across sessions
-- **Cross-Platform** - Works seamlessly across all modern browsers
+**Frontend (Vercel)**
+- Next.js 14 with App Router
+- TypeScript
+- Tailwind CSS
+- Framer Motion
+- HTML5 Canvas
+- Socket.io Client
+- React Colorful
 
-### 💬 Communication Features
-- **Built-in Chat** - Real-time messaging sidebar
-- **User Identification** - Color-coded user avatars and names
+**Backend (Render)**
+- Node.js
+- Express.js
+- Socket.io
+- MongoDB
+- CORS
 
-## 🔧 Tech Stack
-
-### Frontend (Deployed on Vercel)
-- **Next.js 14** - React framework with App Router
-- **TypeScript** - Type-safe development
-- **Tailwind CSS** - Utility-first CSS framework
-- **Framer Motion** - Smooth animations and transitions
-- **HTML5 Canvas** - High-performance drawing surface
-- **Socket.io Client** - Real-time communication
-- **React Colorful** - Advanced color picker component
-
-### Backend (Deployed on Render)
-- **Node.js** - JavaScript runtime
-- **Express.js** - Web application framework
-- **Socket.io** - Real-time bidirectional event-based communication
-- **MongoDB** - Database for room and canvas persistence
-- **UUID** - Unique identifier generation
-- **CORS** - Cross-origin resource sharing
-
-### Development & Deployment
-- **ESLint** - Code linting and formatting
-- **Vercel** - Frontend deployment and hosting
-- **Render** - Backend deployment and hosting
-- **Git** - Version control with automated deployment
-
-## 🛠️ Local Development Setup
-
-### Prerequisites
-- Node.js (v18 or higher)
-- npm or yarn package manager
+**Development & Deployment**
+- ESLint
+- Vercel (Frontend hosting)
+- Render (Backend hosting)
 - Git
 
-### 1. Clone the Repository
+## Local Development
+
+### Prerequisites
+- Node.js v18+
+- npm or yarn
+- Git
+
+### Setup
 ```bash
 git clone https://github.com/20-uday-06/whiteBoard.git
 cd whiteBoard
 ```
 
-### 2. Backend Setup
+### Backend
 ```bash
 cd backend
 npm install
-
-# Create environment file
 cp .env.example .env
-# Edit .env with your configuration
-
 npm start
 ```
 
-The backend server will start on `http://localhost:5000`
-
-### 3. Frontend Setup
+### Frontend
 ```bash
 cd frontend
 npm install
-
-# Create environment file
 cp .env.example .env.local
-# Edit .env.local with your configuration
-
 npm run dev
 ```
 
-The frontend application will start on `http://localhost:3000`
+### Environment Variables
 
-### 4. Environment Configuration
-
-#### Backend (.env)
+**Backend (.env)**
 ```env
 PORT=5000
 FRONTEND_URL=http://localhost:3000
@@ -132,98 +102,67 @@ MONGODB_URI=mongodb://localhost:27017/collaborative-whiteboard
 NODE_ENV=development
 ```
 
-#### Frontend (.env.local)
+**Frontend (.env.local)**
 ```env
 NEXT_PUBLIC_BACKEND_URL=http://localhost:5000
 ```
 
-## 🚀 Production Deployment
+## Deployment
 
-### Quick Deploy (Recommended)
-
-Use our automated deployment scripts:
-
+### Quick Deploy
+Use the automated scripts:
 ```bash
-# Run deployment script
 ./deploy-vercel.sh    # Linux/Mac
 deploy-vercel.bat     # Windows
 ```
 
-The script will:
-- ✅ Commit and push changes to Git
-- ✅ Test production build
-- ✅ Provide deployment instructions
-
 ### Manual Deployment
 
-#### Frontend Deployment (Vercel)
-1. **Website Method (Easiest)**:
-   - Go to [vercel.com](https://vercel.com)
-   - Import repository: `20-uday-06/whiteBoard`
-   - Set **Root Directory**: `frontend`
-   - Add environment variable:
-     - `NEXT_PUBLIC_BACKEND_URL`: `https://whiteboard-collaboration-backend.onrender.com`
-   - Deploy!
+**Vercel (Frontend)**
+1. Go to vercel.com
+2. Import repository: `20-uday-06/whiteBoard`
+3. Set Root Directory: `frontend`
+4. Add environment variable: `NEXT_PUBLIC_BACKEND_URL`
+5. Deploy
 
-2. **CLI Method**:
-   ```bash
-   cd frontend
-   npm install -g vercel
-   vercel login
-   vercel --prod
-   ```
-
-#### Backend Deployment (Render)
-1. Create new Web Service on [render.com](https://render.com)
+**Render (Backend)**
+1. Create Web Service on render.com
 2. Connect GitHub repository
-3. Set build command: `npm install`
-4. Set start command: `npm start`
-5. Add environment variables:
-   - `FRONTEND_URL`: Your Vercel domain
-   - `MONGODB_URI`: Your MongoDB connection string
-   - `NODE_ENV`: `production`
+3. Set build/start commands
+4. Add environment variables
+5. Deploy
 
-### Environment Variables for Production
+### Production Environment Variables
 ```env
 # Backend (Render)
-PORT=5000
 FRONTEND_URL=https://whiteboard-ten-blush.vercel.app
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/whiteboard
+MONGODB_URI=mongodb+srv://...
 NODE_ENV=production
 
 # Frontend (Vercel)
 NEXT_PUBLIC_BACKEND_URL=https://whiteboard-collaboration-backend.onrender.com
 ```
 
-## 🎮 How to Use
+## Usage
 
-### 🌐 **Live Application**
-1. **Visit**: [https://whiteboard-ten-blush.vercel.app](https://whiteboard-ten-blush.vercel.app)
-2. **Create Room**: Click "Create New Room" and enter your details
-3. **Share**: Copy the room URL and share with collaborators
-4. **Collaborate**: Start drawing and see real-time updates!
+### Live Application
+1. Visit: https://whiteboard-ten-blush.vercel.app
+2. Create a new room or join an existing one
+3. Share the room URL with collaborators
+4. Start drawing and see real-time updates
 
-### 💻 **Local Development**
-1. **Start Servers**: Ensure both backend (port 5000) and frontend (port 3000) are running
-2. **Create Room**: Click "Create New Room" to start a new session
-3. **Invite Others**: Share the room URL with collaborators
-4. **Demo Room**: Try the "Demo Room" for immediate testing
+### Local Development
+1. Start both backend (port 5000) and frontend (port 3000)
+2. Create a room and share the URL
+3. Test with multiple browser tabs
 
-### 🎨 **Using the Whiteboard**
-- **Drawing**: Select pen tool, choose color and size, start drawing
-- **Shapes**: Use rectangle/circle tools for precise shapes
-- **Text**: Click text tool and click canvas to add text
-- **Eraser**: Remove content selectively
-- **Undo/Redo**: Use toolbar buttons or keyboard shortcuts
-- **Chat**: Open chat sidebar to communicate with team
-- **Export**: Download your work as PNG image
-
-### 🔧 **Pro Tips**
-- Use different colors to identify your contributions
-- Clear canvas affects all users - use with caution
-- Chat messages are visible to all room participants
-- Canvas state is preserved during sessions
-- Works best on desktop browsers for full feature access
+### Features
+- Select drawing tools and colors from the toolbar
+- Use shape tools for rectangles and circles
+- Add text by clicking the text tool
+- Chat with collaborators using the sidebar
+- Export your work as PNG
+- Undo/redo actions as needed
 
 ## 📁 Project Structure
 

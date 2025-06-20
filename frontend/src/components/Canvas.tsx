@@ -35,12 +35,11 @@ const Canvas = forwardRef<HTMLCanvasElement, CanvasProps>(
       canvas.height = rect.height * window.devicePixelRatio
       context.scale(window.devicePixelRatio, window.devicePixelRatio)
 
-      // Set drawing context properties
       context.lineCap = 'round'
       context.lineJoin = 'round'
       context.imageSmoothingEnabled = true
 
-      contextRef.current = context      // Socket event listeners for collaborative drawing
+      contextRef.current = context
       const handleDrawStart = (data: DrawingData & { userId: string }) => {
         if (data.userId !== socket.id) {
           contextRef.current?.beginPath()
