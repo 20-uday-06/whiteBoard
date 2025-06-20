@@ -3,13 +3,19 @@ import { io, Socket } from 'socket.io-client'
 class SocketService {
   private socket: Socket | null = null
   private listeners: Map<string, ((...args: any[]) => void)[]> = new Map()
-
   connect(url: string) {
     if (this.socket?.connected) {
       return this.socket
     }
 
-    this.socket = io(url)
+    console.log('Connecting to:', url)
+    this.socket = io(url, {
+      autoConnect: true,
+      reconnection: true,
+      reconnectionDelay: 1000,
+      reconnectionAttempts: 5,
+      timeout: 5000
+    })
     
     // Re-attach all listeners
     this.listeners.forEach((callbacks, event) => {

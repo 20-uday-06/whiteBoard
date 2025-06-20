@@ -8,18 +8,19 @@ export const useSocket = (roomId: string, userData: { name: string; color: strin
   const [isConnected, setIsConnected] = useState(false)
   const [users, setUsers] = useState<User[]>([])
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
-  const [socketId, setSocketId] = useState<string | null>(null)
-  
+  const [socketId, setSocketId] = useState<string | null>(null)  
   useEffect(() => {
     const socket = socketService.connect(process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000')
 
     const handleConnect = () => {
+      console.log('Socket connected:', socket.id)
       setIsConnected(true)
       setSocketId(socket.id || null)
       socketService.emit('join-room', { roomId, userData })
     }
 
     const handleDisconnect = () => {
+      console.log('Socket disconnected')
       setIsConnected(false)
     }
 
